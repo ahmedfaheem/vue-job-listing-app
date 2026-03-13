@@ -1,15 +1,18 @@
 <script setup>
    import {onMounted, ref} from 'vue';
-
-  
-
+   import Navbar from './components/Navbar.vue';
+   import Hero from './components/Hero.vue';
+   import HomeCards from './components/HomeCards.vue';
 
 </script>
 
 <template>
-
-  <h1 class="text-5xl"> Test</h1>
+ <Navbar />
+ <!--  <Hero title="Test Vue" breif="Test Project From Jobs by Vue" /> -->
+ <Hero />
+ <HomeCards />
  
+
 </template>
 
 <style scoped></style>
