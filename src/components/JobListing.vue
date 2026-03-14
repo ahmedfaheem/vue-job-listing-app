@@ -30,7 +30,7 @@ defineProps({
 
 onMounted(async () => {
     try {
-        const data = await fetch("http://localhost:8000/jobs");
+        const data = await fetch("/api/jobs");
         state.Jobs = await data.json();
 
     } catch (error) {
@@ -42,9 +42,7 @@ onMounted(async () => {
 });
 
 
-const loading = ref(true)
-const color = ref('#5dc596')
-const size = ref('15px')
+
 
 </script>
 

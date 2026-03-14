@@ -1,21 +1,51 @@
 <script setup>
 
 import Router from '@/Router'
-import { reactive } from 'vue';
+import { onMounted, reactive, ref } from 'vue';
 import { useToast } from "vue-toastification";
+import { useRoute } from 'vue-router';
+import { PulseLoader } from 'vue-spinner'
 
 const state = reactive({
 
-    type: 'Full-Time',
+    type: '',
     name: '',
     description: '',
-    salary: 'Under $50K',
+    salary: '',
     location: '',
     company: '',
     company_description: '',
     contact_email: '',
     contact_phone: ''
 });
+
+const route = useRoute();
+const jobId= route.params.id;
+const isLoading = ref(false);
+
+onMounted( async () => {
+    try {
+        isLoading.value = true;
+        const data = await fetch(`/api/jobs/${jobId}`);
+        const job = await data.json();
+        state.type = job.type;
+        state.name = job.title;
+        state.description = job.description;
+        state.salary = job.salary;
+        state.location = job.location;
+        state.company = job.company.name;
+        state.company_description = job.company.description;
+        state.contact_email = job.company.contactEmail;
+        state.contact_phone = job.company.contactPhone;
+    } catch (error) {
+        console.error("Error in Fetching Job Details", error);
+        toast.error("Job Not Exists");
+    }finally{
+        isLoading.value = false;
+    }
+});
+
+
 
 const toast = useToast();
 
@@ -36,8 +66,8 @@ const handleSubmit =async () => {
     };
 
     try{
-       const response = await fetch("/api/jobs", {
-        method: "POST",
+       const response = await fetch(`/api/jobs/${jobId}`, {
+        method: "PATCH", //update only updated fields
         headers: {
             "content-type": "application/json"
         },
@@ -47,10 +77,10 @@ const handleSubmit =async () => {
        const job = await response.json();
      
       Router.push(`/job/${job.id}`);
-      toast.success("Job Added Successfully");
+      toast.success("Job Updated Successfully");
     }catch(error){
-        console.log("Error in Adding Job", error);
-    toast.error("Job Not Added Added ");
+        console.log("Error in Updating Job", error);
+    toast.error("Job Not Updated ");
 
     }
 
@@ -60,11 +90,15 @@ const handleSubmit =async () => {
 
 <template>
 
-    <section class="bg-green-50">
+ <div  v-if="isLoading" class="text-center flex justify-center">
+                <PulseLoader />
+    </div>
+
+    <section v-else class="bg-green-50">
         <div class="container m-auto max-w-2xl py-24">
             <div class="bg-white px-6 py-8 mb-4 shadow-md rounded-md border m-4 md:m-0">
                 <form @submit.prevent="handleSubmit">
-                    <h2 class="text-3xl text-center font-semibold mb-6">Add Job</h2>
+                    <h2 class="text-3xl text-center font-semibold mb-6">Edit Job</h2>
 
                     <div class="mb-4">
                         <label for="type" class="block text-gray-700 font-bold mb-2">Job Type</label>
@@ -148,7 +182,7 @@ const handleSubmit =async () => {
                         <button
                             class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-full w-full focus:outline-none focus:shadow-outline"
                             type="submit">
-                            Add Job
+                            Edit Job
                         </button>
                     </div>
                 </form>

@@ -2,6 +2,7 @@
    import {onMounted, ref} from 'vue';
    import Navbar from '@/components/Navbar.vue';
    import { RouterView } from 'vue-router';
+   
 </script>
 
 <template>
